@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+#  database:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: postgres
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 2
+
+  server:
+    image: shiva5128/backend-engineer-takehome:latest
+#    depends_on:
+#      database:
+#        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      LOG_FILE_PATH: "receipts_logs"
+      PORT: 8080
+
