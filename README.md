@@ -10,14 +10,12 @@
 
 ### Running the project
 1. Clone the project
-> `git clone git@github.com:shivasaicharanruthala/backend-engineer-takehome.git`
+> git clone git@github.com:shivasaicharanruthala/backend-engineer-takehome.git
 2. Go project directory
-> `cd backend-engineer-takehome`
-3. Run the docker-compose file 
-> `Make start` 
-4. If in step 3, `Make start` does not work then execute below command 
-> `docker-compose up -d`
-5. Check the logs of application container 
+> cd backend-engineer-takehome
+3. Run the docker-compose file
+> docker-compose up -d
+4. Check the logs of application container 
 ```text
   - check for active logs: `docker ps`
   - check for container id of the image: `docker ps --filter "ancestor=shiva5128/backend-engineer-takehome:latest"`
