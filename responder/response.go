@@ -2,16 +2,21 @@ package responder
 
 import (
 	"encoding/json"
-	"github/shivasaicharanruthala/backend-engineer-takehome/errors"
 	"net/http"
+
+	"github/shivasaicharanruthala/backend-engineer-takehome/errors"
+	"github/shivasaicharanruthala/backend-engineer-takehome/log"
 )
 
 // SetErrorResponse sends an error response with the appropriate status code and error message.
 // It accepts an error and an http.ResponseWriter as parameters and handles different types of custom errors.
-func SetErrorResponse(err error, w http.ResponseWriter) {
+func SetErrorResponse(logger *log.CustomLogger, err error, w http.ResponseWriter, r *http.Request) {
 	switch val := err.(type) {
 	case errors.InvalidParam:
 		errJson, _ := json.Marshal(val)
+
+		lm := log.Message{Level: "ERROR", Method: r.Method, URI: r.RequestURI, StatusCode: val.StatusCode, ErrorMessage: val.Error()}
+		logger.Log(&lm)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(val.StatusCode)
@@ -19,11 +24,17 @@ func SetErrorResponse(err error, w http.ResponseWriter) {
 	case errors.MissingParam:
 		errJson, _ := json.Marshal(val)
 
+		lm := log.Message{Level: "ERROR", Method: r.Method, URI: r.RequestURI, StatusCode: val.StatusCode, ErrorMessage: val.Error()}
+		logger.Log(&lm)
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(val.StatusCode)
 		_, _ = w.Write(errJson)
 	case errors.EntityNotFound:
 		errJson, _ := json.Marshal(val)
+
+		lm := log.Message{Level: "ERROR", Method: r.Method, URI: r.RequestURI, StatusCode: val.StatusCode, ErrorMessage: val.Error()}
+		logger.Log(&lm)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(val.StatusCode)
@@ -31,11 +42,17 @@ func SetErrorResponse(err error, w http.ResponseWriter) {
 	case errors.CustomError:
 		errJson, _ := json.Marshal(val)
 
+		lm := log.Message{Level: "ERROR", Method: r.Method, URI: r.RequestURI, StatusCode: val.StatusCode, ErrorMessage: val.Error()}
+		logger.Log(&lm)
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(val.StatusCode)
 		_, _ = w.Write(errJson)
 	default:
 		errJson, _ := json.Marshal(val)
+
+		lm := log.Message{Level: "ERROR", Method: r.Method, URI: r.RequestURI, StatusCode: 500, ErrorMessage: val.Error()}
+		logger.Log(&lm)
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")

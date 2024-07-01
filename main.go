@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	store "github/shivasaicharanruthala/backend-engineer-takehome/data"
 	"github/shivasaicharanruthala/backend-engineer-takehome/handler"
 	"github/shivasaicharanruthala/backend-engineer-takehome/log"
 	"github/shivasaicharanruthala/backend-engineer-takehome/service"
-	"net/http"
-	"os"
 )
 
 func init() {
@@ -39,13 +40,13 @@ func main() {
 	logger.Log(&lm)
 
 	// Store Layer
-	receiptsStore := store.New()
+	receiptsStore := store.New(logger)
 
 	// Service Layer
-	receiptsSvc := service.New(receiptsStore)
+	receiptsSvc := service.New(logger, receiptsStore)
 
 	// Handler Layer
-	receiptsHandler := handler.New(receiptsSvc)
+	receiptsHandler := handler.New(logger, receiptsSvc)
 
 	// Setup router using mux
 	router := mux.NewRouter().StrictSlash(true)

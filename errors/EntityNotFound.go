@@ -24,5 +24,9 @@ func NewEntityNotFound(err error) EntityNotFound {
 }
 
 func (e EntityNotFound) Error() string {
+	if e.Msg != "" {
+		return e.Msg
+	}
+
 	return fmt.Sprintf("No '%v' found for Id: '%v'", e.Entity, e.ID)
 }

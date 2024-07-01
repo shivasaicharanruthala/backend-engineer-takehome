@@ -3,17 +3,20 @@ package service
 import (
 	"github.com/google/uuid"
 	"github/shivasaicharanruthala/backend-engineer-takehome/data"
+	"github/shivasaicharanruthala/backend-engineer-takehome/log"
 	"github/shivasaicharanruthala/backend-engineer-takehome/model"
 )
 
 // receiptsService is a service layer structure for handling receipt-related operations.
 type receiptsService struct {
+	logger    *log.CustomLogger
 	dataStore data.Receipts // Data layer interface for interacting with the receipt data store.
 }
 
 // New creates and returns a new instance of receiptsService which implements all methods of the interface service.Receipts.
-func New(ds data.Receipts) Receipts {
+func New(l *log.CustomLogger, ds data.Receipts) Receipts {
 	return &receiptsService{
+		logger:    l,
 		dataStore: ds,
 	}
 }
@@ -36,7 +39,7 @@ func (rs receiptsService) Insert(receipt *model.Receipt) (*model.ReceiptPostResp
 	}
 
 	// Calculates the points for the receipt.
-	if err = receipt.CalculateReceiptPoints(); err != nil {
+	if err = receipt.CalculateTotalReceiptPoints(); err != nil {
 		return nil, err
 	}
 

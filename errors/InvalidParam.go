@@ -21,5 +21,9 @@ func NewInvalidParam(err error) InvalidParam {
 	}
 }
 func (e InvalidParam) Error() string {
+	if e.Msg != "" {
+		return e.Msg
+	}
+
 	return fmt.Sprintf("Incorrect value for parameter: " + e.Param)
 }

@@ -20,6 +20,11 @@ func NewMissingParam(err error) MissingParam {
 		TimeStamp:  time.Now().UTC(),
 	}
 }
+
 func (e MissingParam) Error() string {
+	if e.Msg != "" {
+		return e.Msg
+	}
+
 	return fmt.Sprintf("Parameter " + e.Param + " is required for this request")
 }

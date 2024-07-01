@@ -30,5 +30,9 @@ func NewCustomError(err error, statusCode ...int) CustomError {
 }
 
 func (ce CustomError) Error() string {
+	if ce.Msg != "" {
+		return ce.Msg
+	}
+
 	return ce.Err.Error()
 }

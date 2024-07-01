@@ -1,20 +1,24 @@
 package data
 
 import (
-	"github/shivasaicharanruthala/backend-engineer-takehome/errors"
-	"github/shivasaicharanruthala/backend-engineer-takehome/model"
 	"sync"
+
+	"github/shivasaicharanruthala/backend-engineer-takehome/errors"
+	"github/shivasaicharanruthala/backend-engineer-takehome/log"
+	"github/shivasaicharanruthala/backend-engineer-takehome/model"
 )
 
 // receiptStore is a thread-safe structure for storing and managing receipts in memory.
 type receiptStore struct {
+	logger             *log.CustomLogger
 	mu                 sync.Mutex               // Mutex to ensure thread-safe access to the in-memory receipt map.
 	inMemoryReceiptMap map[string]model.Receipt // In-memory map to store receipts with their IDs as keys.
 }
 
 // New creates and returns a new instance of receiptStore which implements methods of the interface Receipts.
-func New() Receipts {
+func New(l *log.CustomLogger) Receipts {
 	return &receiptStore{
+		logger:             l,
 		inMemoryReceiptMap: make(map[string]model.Receipt),
 	}
 }

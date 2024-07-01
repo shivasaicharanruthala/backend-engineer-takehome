@@ -2,24 +2,29 @@ package handler
 
 import (
 	"encoding/json"
+	er "errors"
+	"io"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github/shivasaicharanruthala/backend-engineer-takehome/errors"
+	"github/shivasaicharanruthala/backend-engineer-takehome/log"
 	"github/shivasaicharanruthala/backend-engineer-takehome/model"
 	"github/shivasaicharanruthala/backend-engineer-takehome/responder"
 	"github/shivasaicharanruthala/backend-engineer-takehome/service"
-	"io"
-	"net/http"
 )
 
 // receiptsHandler is a HTTP handler for receipt-related endpoints.
 type receiptsHandler struct {
-	svc service.Receipts
+	logger *log.CustomLogger
+	svc    service.Receipts
 }
 
 // New creates and returns a new instance of receiptsHandler.
-func New(svc service.Receipts) *receiptsHandler {
+func New(l *log.CustomLogger, svc service.Receipts) *receiptsHandler {
 	return &receiptsHandler{
-		svc: svc,
+		logger: l,
+		svc:    svc,
 	}
 }
 
@@ -27,7 +32,8 @@ func New(svc service.Receipts) *receiptsHandler {
 // It validates the receipt ID and retrieves the receipt points from the service layer.
 func (rh *receiptsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	if len(r.URL.Query()) > 0 {
-		w.WriteHeader(http.StatusBadRequest)
+		responder.SetErrorResponse(rh.logger, errors.NewCustomError(er.New("query parameter is not accepted"), 400), w, r)
+
 		return
 	}
 
@@ -36,7 +42,7 @@ func (rh *receiptsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	// Fetch receiptId from path param
 	receiptID := mux.Vars(r)["id"]
 	if !model.IsValidUUID(receiptID) { // validate id, if not valid throw an error
-		responder.SetErrorResponse(errors.NewInvalidParam(errors.InvalidParam{Param: "id"}), w)
+		responder.SetErrorResponse(rh.logger, errors.NewInvalidParam(errors.InvalidParam{Param: "id"}), w, r)
 
 		return
 	}
@@ -44,7 +50,7 @@ func (rh *receiptsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	// Get service call to fetch points to a receiptID
 	receiptPoints, err := rh.svc.Get(receiptID)
 	if err != nil {
-		responder.SetErrorResponse(err, w)
+		responder.SetErrorResponse(rh.logger, err, w, r)
 
 		return
 	}
@@ -63,7 +69,7 @@ func (rh *receiptsHandler) Insert(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Responds with an error if there's an issue reading the request body.
 		err = errors.NewCustomError(err, 400)
-		responder.SetErrorResponse(err, w)
+		responder.SetErrorResponse(rh.logger, err, w, r)
 
 		return
 	}
@@ -72,7 +78,7 @@ func (rh *receiptsHandler) Insert(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Responds with an error if there's an issue unmarshalling the request body.
 		err = errors.NewCustomError(err, 400)
-		responder.SetErrorResponse(err, w)
+		responder.SetErrorResponse(rh.logger, err, w, r)
 
 		return
 	}
@@ -80,7 +86,7 @@ func (rh *receiptsHandler) Insert(w http.ResponseWriter, r *http.Request) {
 	// service call to insert receipt
 	receiptResponse, err := rh.svc.Insert(&receipt)
 	if err != nil {
-		responder.SetErrorResponse(err, w)
+		responder.SetErrorResponse(rh.logger, err, w, r)
 
 		return
 	}
