@@ -92,7 +92,9 @@ Breakdown:
 
 
 #  Notes
-- **Design Approach:** To meet the requirement that data need not persist across server restarts, I utilized an in-memory map in Go to store receipts. This approach avoids the overhead of setting up a database like PostgreSQL. However, **since Go maps are not concurrency-safe, I implemented a mutex lock `rs.mu.Lock()` to ensure safe concurrent access to the `inMemoryReceiptMap`. The lock is acquired before performing get/put operations and released afterward using `defer rs.mu.Unlock()`.**
+- **Design Approach:** 
+  - To meet the requirement that data need not persist across server restarts, I utilized an in-memory map in Go to store receipts. This approach avoids the overhead of setting up a database like PostgreSQL. 
+  - However, **since Go maps are not concurrency-safe, I implemented a mutex lock `rs.mu.Lock()` to ensure safe concurrent access to the `inMemoryReceiptMap`. The lock is acquired before performing get/put operations and released afterward using `defer rs.mu.Unlock()`.**
 - **Code Structure:** The codebase is well-structured and clean, organized into different packages. It uses a layered architecture with the following components:
   - **Handler Layer:** Handles requests and validates request parameters.
   - **Service Layer:** Contains the business logic.
